@@ -7,8 +7,8 @@ import io
 
 app = Flask(__name__)
 
-# Memuat model Keras
-model = load_model("model3.h5")
+# Load the Keras model from the directory
+model = load_model("CNN.keras")
 
 def prepare_image(image, target_size):
     if image.mode != "RGB":
@@ -39,7 +39,7 @@ def predict():
     try:
         print("Processing image")
         image = Image.open(io.BytesIO(file.read()))
-        processed_image = prepare_image(image, target_size=(224, 224))  # Sesuaikan dengan ukuran input model Anda
+        processed_image = prepare_image(image, target_size=(224, 224))  # Adjust to your model's input size
         prediction = model.predict(processed_image).tolist()
         print("Prediction made")
         return jsonify({"prediction": prediction})
