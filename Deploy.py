@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
 from tensorflow.keras.models import load_model
-from tensorflow.keras.preprocessing.image import img_to_array
+from tensorflow.keras.preprocessing.image import img_to_array, load_img
 import numpy as np
 from PIL import Image
 import io
@@ -8,14 +8,13 @@ import io
 app = Flask(__name__)
 
 # Load the Keras model from the directory
-model = load_model("CNN.keras")
+model = load_model("Model Hama Sawi.h5")
 
-def prepare_image(image, target_size):
-    if image.mode != "RGB":
-        image = image.convert("RGB")
-    image = image.resize(target_size)
+def preprocess_image(image):
+    image = image.resize((128, 128))  # Adjust the target size to match your model's expected input
     image = img_to_array(image)
     image = np.expand_dims(image, axis=0)
+    image = image / 255.0  # Normalizing the image if needed
     return image
 
 @app.route("/api/hello", methods=["GET"])
@@ -39,7 +38,7 @@ def predict():
     try:
         print("Processing image")
         image = Image.open(io.BytesIO(file.read()))
-        processed_image = prepare_image(image, target_size=(224, 224))  # Adjust to your model's input size
+        processed_image = preprocess_image(image)
         prediction = model.predict(processed_image).tolist()
         print("Prediction made")
         return jsonify({"prediction": prediction})
